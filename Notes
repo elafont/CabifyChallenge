@@ -1,0 +1,17 @@
+The challenge is solved with 4 entities
+
+item: identify sellable articles on the shop and its price
+ticket: identify a set of lines describing items purchased by a customer,
+        it does keep track of the items added and the discounts appliable
+line: each and every one of the items that compose a ticket
+rules: set of rules to apply for discount based on the number of items purchased,
+       the number it does occupy in the ticket and/or the price single/total to pay.
+       Also enables to calculate a global discount based on number of items and/or price paid
+
+
+There is a table precreated "todayDiscounts" that has the discounts suggested by the challenge, 
+but other tables can be created as needed, the assignements of discounts are ticket based, so
+it's posible to apply unique discounts to selected customers, or change the discounts at will, 
+even on the fly based on ticket status.
+
+There is no main app, as the tests shows how to use the code while testing its correctness 
