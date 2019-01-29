@@ -28,8 +28,7 @@ func TestTicket(t *testing.T) {
 				ticket.Add(item)
 			}
 			ticket.Calc()
-			t.Log(*ticket.ttotal)
-			if *ticket.ttotal != bl.total {
+			if ticket.ttotal != bl.total {
 				t.Error("Bad Total")
 			}
 			// fmt.Println(ticket.String())

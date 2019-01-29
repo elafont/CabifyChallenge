@@ -27,7 +27,8 @@ type Ticket struct {
 	lines           []*line             // Lines in the ticket
 	ticketDiscount  float32             // Discount applied to the whole ticket
 	ts              time.Time           // Creation date for the ticket
-	ttotal          *float32            // Total for the ticket, nil means ticket not Calculated
+	ttotal          float32             // Total for the ticket,
+	up2date         bool                // false means ticket needs re-Calc
 	discRules       rules               // Discount Rules to apply
 	itemsDiscounted map[*items.Item]int // number of items being discounted
 }
@@ -75,14 +76,14 @@ func NewTicket(discounts rules) *Ticket {
 // SetDiscount, Changes the discount rules applied to the ticket
 func (t *Ticket) SetDiscount(discounts rules) {
 	t.discRules = discounts
-	t.ttotal = nil
+	t.up2date = false
 }
 
 // Add items to a ticket
 func (t *Ticket) Add(item *items.Item) {
 	t.Lock()
 	t.lines = append(t.lines, &line{item: item})
-	t.ttotal = nil
+	t.up2date = false
 	t.Unlock()
 }
 
@@ -104,7 +105,8 @@ func (t *Ticket) Calc() float32 {
 
 	t.Unlock()
 	ttotal -= t.ticketDiscount
-	t.ttotal = &ttotal
+	t.ttotal = ttotal
+	t.up2date = true
 	return ttotal
 }
 
@@ -135,9 +137,9 @@ func (t *Ticket) countLocked(item *items.Item) (total int) {
 // String, returns the whole ticket in printed form
 func (t *Ticket) String() string {
 	var ticket strings.Builder
-	if t.ttotal == nil {
+	if t.up2date == false {
 		ttotal := t.Calc()
-		t.ttotal = &ttotal
+		t.ttotal = ttotal
 	}
 
 	header := "CABIFY STORE   date:%19s\n\n"
@@ -164,7 +166,7 @@ func (t *Ticket) String() string {
 		ticket.WriteString(fmt.Sprintf(tDiscount, t.ticketDiscount))
 	}
 
-	ticket.WriteString(fmt.Sprintf(footer, *t.ttotal))
+	ticket.WriteString(fmt.Sprintf(footer, t.ttotal))
 	ticket.WriteString(fmt.Sprintln())
 	return ticket.String()
 }
